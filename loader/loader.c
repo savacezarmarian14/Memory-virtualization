@@ -40,8 +40,6 @@ static void segv_handler(int signum, siginfo_t *info, void *context)
 	int rc;
 	/** AM PRELUAT BUCATI DE COD DIN LAB06 DIN 5-PROT/TODO2 PENTRU TRATAREA SEMNALULUI SIGSEGV*/
 
-	
-
 	/*  - check if the signal is SIGSEGV */
 	if (signum != SIGSEGV) {
 		old_action.sa_sigaction(signum, info, context);
@@ -82,15 +80,13 @@ static void segv_handler(int signum, siginfo_t *info, void *context)
 
 			printf("1\n");
 			
-			int dataSize;
+			int dataSize = 0 ;
 			
 			/* offsetul din fisier */
 			int fileOff = segment.offset + (page * pageSize);
-			
-			if (pageSize * page > segment.file_size) /*daca sunt in ZERO */
-				dataSize = 0; /* NU */
-			else
-				dataSize = min(pageSize, segment.file_size - (pageSize * page)); /* DA */
+
+			if (page * pageSize < segment.file_size)
+				dataSize = min(pageSize, segment.file_size - (pageSize * page));
 
 			char* fromFileInput;
 
@@ -110,7 +106,11 @@ static void segv_handler(int signum, siginfo_t *info, void *context)
 
 			/* ACTUALIZEZ PAGINA mapped CU DATELE DIN FISIER */
 			memcpy(mapped, fromFileInput, pageSize);
-			free(fromFileInput);
+
+			/* :| NIGHTMARE \/------------ 3 ore groaznice... */ 
+			free(fromFileInput); 
+			
+
 			rc = mprotect(mapped, pageSize, segment.perm);
 			DIE(rc < 0, "mprotect");
 
@@ -136,7 +136,6 @@ char* get_input(unsigned int offset, unsigned int size)
 	int fd = open(file_name, O_RDONLY);
 	DIE(fd < 0, "open");
 
-
 	off_t cursor_pos = lseek(fd, offset, SEEK_SET);
 	DIE(cursor_pos < 0, "lseek");
 
@@ -146,8 +145,7 @@ char* get_input(unsigned int offset, unsigned int size)
 	int close_ret = close(fd);
 	DIE(close_ret < 0, "close");
 
-	return data;
-	
+	return data;	
 }
 
 static void set_signal(void)

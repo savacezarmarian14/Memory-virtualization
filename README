@@ -8,5 +8,3 @@ In aceasta tema am implementat un handler pentru tratarea semnalului SIG_SEGV as
 
 Daca nu se prindea SIGSEGV se trata semnalul exact cum trebuie el tratat
 
-Pe departe cea mai usoara tema dar si cea mai cu nabadai.
-Nu inteleg de ce daca nu dadeam free la fromFileInput nu mi rula ultimul test (ma gandesc la epuizarea memoriei desi nu cred)
